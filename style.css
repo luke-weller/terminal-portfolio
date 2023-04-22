@@ -1,0 +1,76 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#terminal-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#terminal {
+  background-color: #0f111a;
+  color: #e2e2e2;
+  font-family: "Source Code Pro", Monaco, monospace;
+  font-size: 14px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#input-line {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+#prompt {
+  color: #6ef644;
+  margin-right: 5px;
+}
+
+#command {
+  background-color: transparent;
+  border: none;
+  color: #e2e2e2;
+  flex: 1;
+  outline: none;
+}
+
+#output {
+  padding: 10px;
+  white-space: pre-wrap;
+  font-family: "Source Code Pro", Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-y: auto;
+  max-height: 300px;
+  margin-top: 10px;
+  border: 1px solid #21232d;
+  box-shadow: 0px 1px 3px #00000029;
+}
+
+#output span {
+  color: #6ef644;
+}
+
+#output a {
+  color: #4ea5d9;
+  text-decoration: none;
+}
+
+#output a:hover {
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 1000px) {
+  #terminal-container {
+    padding: 10px;
+  }
+}
