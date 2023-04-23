@@ -14,19 +14,26 @@ function printOutput(text) {
   output.innerHTML += `${text}<br>`;
   terminal.scrollTop = terminal.scrollHeight;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const commandInput = document.getElementById('command');
+  const output = document.getElementById('output');
   
-commandInput.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    const input = commandInput.value;
-    commandInput.value = '';
-    if (input === '') {
-      return;
+  commandInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const input = commandInput.value;
+      commandInput.value = '';
+      if (input === '') {
+        return;
+      }
+      printOutput(`<span id="prompt">&gt;</span> ${input}`);
+      const outputText = processCommand(input);
+      printOutput(outputText);
     }
-    printOutput(`<span id="prompt">&gt;</span> ${input}`);
-    const outputText = processCommand(input);
-    printOutput(outputText);
-  }
+  });
+  
+  commandInput.focus();
 });
 
-commandInput.focus();
+module.exports = { processCommand };
