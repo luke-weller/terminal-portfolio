@@ -4,20 +4,23 @@ const output = document.getElementById('output');
 
 function processCommand(input) {
   if (input === 'clear') {
-    output.innerHTML = '';
+    if (output !== null) {
+      output.innerText = '';
+    }
     return '';
   }
   return `You entered: ${input}`;
 }
 
 function printOutput(text) {
-  output.innerHTML += `${text}<br>`;
+  if (output === null) {
+    return;
+  }
+  output.innerText += `${text}\n`;
   terminal.scrollTop = terminal.scrollHeight;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  const commandInput = document.getElementById('command');
-  const output = document.getElementById('output');
   
   commandInput.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
@@ -27,13 +30,13 @@ document.addEventListener('DOMContentLoaded', function() {
       if (input === '') {
         return;
       }
-      printOutput(`<span id="prompt">&gt;</span> ${input}`);
+      printOutput(`> ${input}`);
       const outputText = processCommand(input);
       printOutput(outputText);
     }
   });
-  
   commandInput.focus();
 });
 
-module.exports = { processCommand };
+
+module.exports = { processCommand, printOutput };
