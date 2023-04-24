@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-const { processCommand, printOutput } = require('./app');
+const { processCommand } = require('./app');
 
 let dom;
 let commandInput;
