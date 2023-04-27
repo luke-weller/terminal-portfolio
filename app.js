@@ -1,42 +1,47 @@
-const terminal = document.getElementById('terminal');
-const commandInput = document.getElementById('command');
-const output = document.getElementById('output');
+const terminalBody = document.querySelector('.terminal-body');
+const terminalInput = document.querySelector('.terminal-input');
+const terminalPrefix = document.querySelector('.terminal-prefix');
 
-function processCommand(input) {
-  if (input === 'clear') {
-    if (output !== null) {
-      output.innerText = '';
-    }
-    return '';
-  }
-  return `You entered: ${input}`;
+function addOutputToTerminal(output) {
+  const outputDiv = document.createElement('div');
+  outputDiv.classList.add('terminal-output');
+  outputDiv.textContent = output;
+  terminalBody.appendChild(outputDiv);
 }
 
-function printOutput(text) {
-  if (output === null) {
-    return;
-  }
-  output.innerText += `${text}\n`;
-  terminal.scrollTop = terminal.scrollHeight;
+const commands = new Map();
+
+function clearTerminal() {
+  terminalBody.innerHTML = '';
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  
-  commandInput.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const input = commandInput.value;
-      commandInput.value = '';
-      if (input === '') {
-        return;
-      }
-      printOutput(`> ${input}`);
-      const outputText = processCommand(input);
-      printOutput(outputText);
-    }
-  });
-  commandInput.focus();
+function echoText(text) {
+  addOutputToTerminal(text);
+}
+
+function getCurrentDate() {
+  addOutputToTerminal(new Date().toLocaleString());
+}
+
+commands.set('clear', clearTerminal);
+commands.set('echo', echoText);
+commands.set('date', getCurrentDate);
+// add more commands here as needed
+
+function processInput(input) {
+  const [command, argument] = input.trim().split(' ');
+
+  if (commands.has(command)) {
+    commands.get(command)(argument);
+  } else {
+    addOutputToTerminal(`Unknown command: ${command}`);
+  }
+
+  terminalInput.value = '';
+}
+
+terminalInput.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    processInput(terminalPrefix.textContent + ' ' + terminalInput.value);
+  }
 });
-
-
-module.exports = { processCommand, printOutput };

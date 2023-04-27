@@ -7,9 +7,6 @@
     "test": "jest"
   },
   "testEnvironment": "jsdom",
-  "setupFilesAfterEnv": [
-    "<rootDir>/setupJest.js"
-  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -19,5 +16,10 @@
   },
   "dependencies": {
     "jest-environment-jsdom": "^29.5.0"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/setupJest.js"
+    ]
   }
 }

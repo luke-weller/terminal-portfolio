@@ -5,13 +5,14 @@
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-    <div id="terminal-container">
-      <div id="terminal">
-        <div id="output"></div>
-        <div id="input-line">
-          <div id="prompt">></div>
-          <input type="text" id="command" autofocus />
-        </div>
+    <div class="terminal-container">
+      <div class="terminal-header">
+        <div class="terminal-title">Terminal</div>
+      </div>
+      <div class="terminal-body"></div>
+      <div class="terminal-input-container">
+        <div class="terminal-prefix"></div>
+        <input class="terminal-input" type="text" />
       </div>
     </div>
     <script src="app.js"></script>
