@@ -82,10 +82,6 @@
   flex: 1;
 }
 
-.time {
-  color: #999999; 
-}
-
 .terminal-output {
   background-color: rgba(255, 255, 255, 0.03);
   padding-left: 22px;
@@ -95,4 +91,10 @@
   margin-bottom: 12px;
   font-size: 16px;
   border-radius: 10px;
+  display: flex;
+}
+
+.time {
+  color: #999999;
+  margin-right: 10px;
 }
