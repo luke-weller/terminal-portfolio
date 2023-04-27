@@ -5,9 +5,14 @@ const terminalPrefix = document.querySelector('.terminal-prefix');
 function addOutputToTerminal(output) {
   const outputDiv = document.createElement('div');
   outputDiv.classList.add('terminal-output');
-  outputDiv.textContent = output;
+  const timeDiv = document.createElement('div');
+  timeDiv.classList.add('time');
+  timeDiv.textContent = getCurrentTime();
+  outputDiv.appendChild(timeDiv);
+  outputDiv.appendChild(document.createTextNode(output));
   terminalBody.appendChild(outputDiv);
 }
+
 
 const commands = new Map();
 
@@ -19,14 +24,30 @@ function echoText(text) {
   addOutputToTerminal(text);
 }
 
-function getCurrentDate() {
-  addOutputToTerminal(new Date().toLocaleString());
+function getCurrentTime() {
+  const date = new Date();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const time = `${hours}:${minutes}`;
+  return time;
+}
+
+function showHelp() {
+  const helpText = `
+    Available commands:
+    clear - Clear the terminal screen
+    echo <text> - Print the provided text
+    time - Display the current time
+    help - Display this help message
+  `;
+  addOutputToTerminal(helpText);
 }
 
 commands.set('clear', clearTerminal);
 commands.set('echo', echoText);
-commands.set('date', getCurrentDate);
-// add more commands here as needed
+commands.set('time', getCurrentTime);
+commands.set('help', showHelp);
+
 
 function processInput(input) {
   const [command, argument] = input.trim().split(' ');
