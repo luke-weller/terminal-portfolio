@@ -3,73 +3,62 @@ const terminalInput = document.querySelector('.terminal-input');
 const terminalPrefix = document.querySelector('.terminal-prefix');
 
 function addOutputToTerminal(output) {
+  const time = getCurrentTime();
   const outputDiv = document.createElement('div');
   outputDiv.classList.add('terminal-output');
+
+  if (Array.isArray(output)) {
+    output.forEach((item) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.textContent = item;
+      outputDiv.appendChild(itemDiv);
+    });
+  } else {
+    outputDiv.textContent = output;
+  }
+
   const timeDiv = document.createElement('div');
   timeDiv.classList.add('time');
-  timeDiv.textContent = getCurrentTime();
-  outputDiv.appendChild(timeDiv);
-  outputDiv.appendChild(document.createTextNode(output));
+  timeDiv.textContent = time;
+  outputDiv.insertBefore(timeDiv, outputDiv.firstChild);
+
   terminalBody.appendChild(outputDiv);
 }
 
-class Command {
-  execute(argument) {}
-  getCommandName() {}
-  getHelpText() {}
-}
+export class Command {
+  constructor(name, description) {
+    this.name = name;
+    this.description = description;
+  }
 
-class HelpCommand extends Command {
-  execute() {
-    const helpText = `
-      Available commands:
-      clear - Clear the terminal screen
-      echo <text> - Print the provided text
-      time - Display the current time
-      help - Display this help message
-    `;
-    addOutputToTerminal(helpText);
-  }
-  getCommandName() {
-    return 'help';
-  }
-  getHelpText() {
-    return 'Display this help message';
+  execute(_argument) {
+    throw new Error('Command.execute() method must be implemented by child classes');
   }
 }
 
 class ClearCommand extends Command {
+  constructor() {
+    super('clear', 'Clear the terminal screen');
+  }
+
   execute() {
-    clearTerminal();
-  }
-  getCommandName() {
-    return 'clear';
-  }
-  getHelpText() {
-    return 'Clear the terminal screen';
+    terminalBody.textContent = '';
   }
 }
 
 class EchoCommand extends Command {
+  constructor() {
+    super('echo', 'Print the provided text');
+  }
+
   execute(argument) {
     addOutputToTerminal(argument);
-  }
-  getCommandName() {
-    return 'echo';
-  }
-  getHelpText() {
-    return 'Print the provided text';
   }
 }
 
 const commands = new Map();
 commands.set('clear', new ClearCommand());
-commands.set('help', new HelpCommand());
 commands.set('echo', new EchoCommand());
-
-function clearTerminal() {
-  terminalBody.innerHTML = '';
-}
 
 function getCurrentTime() {
   const date = new Date();
