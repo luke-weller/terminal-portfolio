@@ -13,15 +13,62 @@ function addOutputToTerminal(output) {
   terminalBody.appendChild(outputDiv);
 }
 
+class Command {
+  execute(argument) {}
+  getCommandName() {}
+  getHelpText() {}
+}
+
+class HelpCommand extends Command {
+  execute() {
+    const helpText = `
+      Available commands:
+      clear - Clear the terminal screen
+      echo <text> - Print the provided text
+      time - Display the current time
+      help - Display this help message
+    `;
+    addOutputToTerminal(helpText);
+  }
+  getCommandName() {
+    return 'help';
+  }
+  getHelpText() {
+    return 'Display this help message';
+  }
+}
+
+class ClearCommand extends Command {
+  execute() {
+    clearTerminal();
+  }
+  getCommandName() {
+    return 'clear';
+  }
+  getHelpText() {
+    return 'Clear the terminal screen';
+  }
+}
+
+class EchoCommand extends Command {
+  execute(argument) {
+    addOutputToTerminal(argument);
+  }
+  getCommandName() {
+    return 'echo';
+  }
+  getHelpText() {
+    return 'Print the provided text';
+  }
+}
 
 const commands = new Map();
+commands.set('clear', new ClearCommand());
+commands.set('help', new HelpCommand());
+commands.set('echo', new EchoCommand());
 
 function clearTerminal() {
   terminalBody.innerHTML = '';
-}
-
-function echoText(text) {
-  addOutputToTerminal(text);
 }
 
 function getCurrentTime() {
@@ -32,37 +79,24 @@ function getCurrentTime() {
   return time;
 }
 
-function showHelp() {
-  const helpText = `
-    Available commands:
-    clear - Clear the terminal screen
-    echo <text> - Print the provided text
-    time - Display the current time
-    help - Display this help message
-  `;
-  addOutputToTerminal(helpText);
-}
-
-commands.set('clear', clearTerminal);
-commands.set('echo', echoText);
-commands.set('time', getCurrentTime);
-commands.set('help', showHelp);
-
-
-function processInput(input) {
-  const [command, argument] = input.trim().split(' ');
-
-  if (commands.has(command)) {
-    commands.get(command)(argument);
-  } else {
-    addOutputToTerminal(`Unknown command: ${command}`);
+class TerminalApp {
+  processCommand(command) {
+    const [name, arg] = command.trim().split(' ');
+    const cmd = commands.get(name);
+    if (cmd) {
+      cmd.execute(arg);
+    } else {
+      addOutputToTerminal(`Unknown command: ${name}`);
+    }
   }
-
-  terminalInput.value = '';
 }
 
 terminalInput.addEventListener('keydown', function(event) {
   if (event.key === 'Enter') {
-    processInput(terminalPrefix.textContent + ' ' + terminalInput.value);
+    const command = terminalPrefix.textContent + ' ' + terminalInput.value;
+    terminalApp.processCommand(command);
+    terminalInput.value = '';
   }
 });
+
+const terminalApp = new TerminalApp();
