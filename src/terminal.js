@@ -5,7 +5,9 @@ export const terminalBody = document.querySelector('.terminal-body');
 
 export function addOutputToTerminal(output) {
   const time = getCurrentTime();
+
   const outputDiv = document.createElement('div');
+  outputDiv.setAttribute('id', 'terminal-output');
   outputDiv.classList.add('terminal-output');
 
   if (Array.isArray(output)) {
