@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { getCurrentTime } from "../src/terminal.js";
 import { driver, APP_URL, By } from "./webdriver.js";
 
-describe("Terminal commands", function () {
+describe("Terminal", function () {
   this.timeout(10000);
 
   beforeEach(async function () {

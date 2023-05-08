@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { driver, APP_URL, By, until } from "./webdriver.js";
 
-describe("Terminal commands", function () {
+describe("Comands", function () {
   this.timeout(10000);
 
   beforeEach(async function () {
