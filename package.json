@@ -9,10 +9,11 @@
   "type": "module",
   "scripts": {
     "test": "mocha tests/**/*.js",
-    "start": "http-server -c-1"
+    "server": "http-server -c-1"
   },
   "devDependencies": {
     "chai": "^4.3.7",
+    "http-server": "^14.1.1",
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.9.0"
   }
