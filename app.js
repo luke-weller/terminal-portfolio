@@ -2,6 +2,9 @@ const terminalBody = document.querySelector(".terminal-body");
 const terminalInput = document.querySelector(".terminal-input");
 const terminalPrefix = document.querySelector(".terminal-prefix");
 
+const commandHistory = [];
+let commandIndex = -1;
+
 function addOutputToTerminal(output) {
   const outputDiv = document.createElement("div");
   outputDiv.classList.add("terminal-output");
@@ -27,7 +30,7 @@ const commands = {
   clear: clearTerminal,
   echo: echoText,
   help: showHelp,
-  jsonTest: jsonApiTest,
+  testapi: jsonApiTest,
 };
 
 function clearTerminal() {
@@ -88,7 +91,8 @@ async function fetchDataFromAPI(url) {
 
 async function jsonApiTest(url) {
   if (!url) {
-    throw new Error("No URL provided.");
+    addOutputToTerminal("Please provide a URL.");
+    return;
   }
 
   try {
@@ -104,19 +108,28 @@ async function jsonApiTest(url) {
   }
 }
 
-async function processInput(input) {
+function processInput(input) {
   const [command, ...args] = input.trim().split(" ");
   const argument = args.join(" ");
+
+  if (command === "") {
+    return; // Ignore empty commands
+  }
+
+  if (command === "clear") {
+    clearTerminal();
+    terminalInput.value = "";
+    return;
+  }
+
+  commandHistory.push(input);
+  commandIndex = commandHistory.length;
 
   if (command in commands) {
     const commandFunction = commands[command];
 
     try {
-      if (command === "testapi") {
-        await commandFunction(argument);
-      } else if (command === "help") {
-        commandFunction(argument);
-      } else if (command === "echo") {
+      if (command === "testapi" || command === "help" || command === "echo") {
         commandFunction(argument);
       } else {
         commandFunction();
@@ -131,9 +144,27 @@ async function processInput(input) {
   terminalInput.value = "";
 }
 
-terminalInput.addEventListener("keydown", (event) => {
+function navigateCommandHistory(direction) {
+  if (commandHistory.length === 0) {
+    return;
+  }
+
+  if (direction === "up" && commandIndex > 0) {
+    commandIndex--;
+  } else if (direction === "down" && commandIndex < commandHistory.length - 1) {
+    commandIndex++;
+  }
+
+  terminalInput.value = commandHistory[commandIndex] || "";
+}
+
+terminalInput.addEventListener("keyup", (event) => {
   if (event.key === "Enter") {
     processInput(terminalPrefix.textContent + " " + terminalInput.value);
+  } else if (event.key === "ArrowUp") {
+    navigateCommandHistory("up");
+  } else if (event.key === "ArrowDown") {
+    navigateCommandHistory("down");
   }
 });
 
