@@ -98,3 +98,9 @@
   color: #999999;
   margin-right: 10px;
 }
+
+.json-content {
+  overflow-x: auto;
+  max-width: 100%;
+  word-break: break-all;
+}

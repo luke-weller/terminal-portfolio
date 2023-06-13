@@ -10,12 +10,9 @@ function addOutputToTerminal(output) {
   timeDiv.textContent = getCurrentTime();
   outputDiv.appendChild(timeDiv);
 
-  // If the output is a string, display it as-is
   if (typeof output === "string") {
     outputDiv.appendChild(document.createTextNode(output));
-  }
-  // If the output is an object, display it as formatted JSON
-  else if (typeof output === "object") {
+  } else if (typeof output === "object") {
     const jsonText = JSON.stringify(output, null, 2);
     const preElement = document.createElement("pre");
     preElement.classList.add("json-content");
@@ -26,7 +23,12 @@ function addOutputToTerminal(output) {
   terminalBody.appendChild(outputDiv);
 }
 
-const commands = new Map();
+const commands = {
+  clear: clearTerminal,
+  echo: echoText,
+  help: showHelp,
+  jsonTest: jsonApiTest,
+};
 
 function clearTerminal() {
   terminalBody.innerHTML = "";
@@ -38,9 +40,11 @@ function echoText(text) {
 
 function getCurrentTime() {
   const date = new Date();
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  const time = `${hours}:${minutes}`;
+  const time = date.toLocaleTimeString("en-US", {
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   return time;
 }
 
@@ -63,53 +67,62 @@ function showHelp(command) {
       addOutputToTerminal(`Unknown command: ${command}`);
     }
   } else {
-    addOutputToTerminal(helpText);
+    addOutputToTerminal(helpText.content);
   }
 }
 
 async function fetchDataFromAPI(url) {
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch data from API (${response.status} ${response.statusText})`
+      );
+    }
     const data = await response.json();
     return data;
   } catch (error) {
-    return null;
+    throw new Error(`Error fetching data from API: ${error.message}`);
   }
 }
 
-async function testAPI(url) {
+async function jsonApiTest(url) {
   if (!url) {
-    addOutputToTerminal("No URL provided.");
-    return;
+    throw new Error("No URL provided.");
   }
 
-  addOutputToTerminal("Fetching data from API...");
-  const data = await fetchDataFromAPI(url);
-  if (data !== null) {
-    addOutputToTerminal(data);
-  } else {
-    addOutputToTerminal("No JSON response found.");
+  try {
+    addOutputToTerminal("Fetching data from API...");
+    const data = await fetchDataFromAPI(url);
+    if (data !== null) {
+      addOutputToTerminal(data);
+    } else {
+      addOutputToTerminal("No JSON response found.");
+    }
+  } catch (error) {
+    addOutputToTerminal(`Error: ${error.message}`);
   }
 }
-
-commands.set("clear", clearTerminal);
-commands.set("echo", echoText);
-commands.set("help", showHelp);
-commands.set("testapi", testAPI);
 
 async function processInput(input) {
   const [command, ...args] = input.trim().split(" ");
   const argument = args.join(" ");
 
-  if (commands.has(command)) {
-    const commandFunction = commands.get(command);
+  if (command in commands) {
+    const commandFunction = commands[command];
 
-    if (command === "testapi") {
-      commandFunction(argument);
-    } else if (command === "help") {
-      showHelp(argument);
-    } else {
-      commandFunction();
+    try {
+      if (command === "testapi") {
+        await commandFunction(argument);
+      } else if (command === "help") {
+        commandFunction(argument);
+      } else if (command === "echo") {
+        commandFunction(argument);
+      } else {
+        commandFunction();
+      }
+    } catch (error) {
+      addOutputToTerminal(`Error: ${error.message}`);
     }
   } else {
     addOutputToTerminal(`Unknown command: ${command}`);
@@ -118,12 +131,12 @@ async function processInput(input) {
   terminalInput.value = "";
 }
 
-terminalInput.addEventListener("keydown", function (event) {
+terminalInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     processInput(terminalPrefix.textContent + " " + terminalInput.value);
   }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   terminalInput.focus();
 });
